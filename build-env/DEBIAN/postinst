@@ -1,0 +1,43 @@
+#!/bin/bash
+# Post-install script for nusa-theme
+
+echo "🎨 Memulai Operasi Plastik Nusa OS..."
+
+# 1. Ganti Identitas Sistem (OS Release)
+cat <<EOF > /etc/os-release
+PRETTY_NAME="Nusa OS V1 Alpha"
+NAME="Nusa OS"
+VERSION_ID="1.0"
+VERSION="1.0 Alpha (Z-Core DNA)"
+VERSION_CODENAME=alpha
+ID=nusa
+ID_LIKE=ubuntu
+HOME_URL="https://github.com/Nusa-OS"
+EOF
+
+# 2. Ganti LSB Release
+cat <<EOF > /etc/lsb-release
+DISTRIB_ID=Nusa
+DISTRIB_RELEASE=1.0
+DISTRIB_CODENAME=alpha
+DISTRIB_DESCRIPTION="Nusa OS V1 Alpha"
+EOF
+
+# 3. Ganti Teks Terminal Login
+echo -e "Nusa OS V1 Alpha \n \l" > /etc/issue
+echo "Nusa OS V1 Alpha" > /etc/issue.net
+
+# 4. Ganti Wallpaper Lockscreen (LightDM)
+if [ -f /etc/lightdm/lightdm-gtk-greeter.conf ]; then
+    sed -i 's|^#background=.*|background=/usr/share/backgrounds/nusa/default.jpg|' /etc/lightdm/lightdm-gtk-greeter.conf
+    sed -i 's|^background=.*|background=/usr/share/backgrounds/nusa/default.jpg|' /etc/lightdm/lightdm-gtk-greeter.conf
+fi
+
+# 5. Brutal Force: Timpa Wallpaper Default XFCE & Debian
+ln -sf /usr/share/backgrounds/nusa/default.jpg /usr/share/backgrounds/xfce/xfce-shapes.svg
+ln -sf /usr/share/backgrounds/nusa/default.jpg /usr/share/backgrounds/xfce/xfce-stripes.png
+ln -sf /usr/share/backgrounds/nusa/default.jpg /usr/share/backgrounds/xfce/xfce-teal.jpg
+ln -sf /usr/share/backgrounds/nusa/default.jpg /usr/share/backgrounds/xfce/xfce-verticals.png
+
+echo "✅ Identitas Nusa OS berhasil dipasang!"
+exit 0
