@@ -1,8 +1,9 @@
 #!/bin/bash
+# Post-install script V3: The Skel Injector
 
-echo "🎨 Memulai Operasi Plastik Nusa OS..."
+echo "🎨 Memulai Operasi Plastik V3 (Skel Injection)..."
 
-# 1. Ganti Identitas Sistem (OS Release)
+# 1. Identitas OS Release
 cat <<EOF > /etc/os-release
 PRETTY_NAME="Nusa OS V1 Alpha"
 NAME="Nusa OS"
@@ -14,27 +15,19 @@ ID_LIKE=ubuntu
 HOME_URL="https://github.com/Nusa-OS"
 EOF
 
-# 2. Membunuh Hostname 'Ubuntu' dari Live CD (Casper)
-if [ -f /etc/casper.conf ]; then
-    sed -i 's/export HOSTNAME=.*/export HOSTNAME="nusa-os"/' /etc/casper.conf
-    sed -i 's/export FLAVOUR=.*/export FLAVOUR="Nusa OS"/' /etc/casper.conf
-fi
+# 2. Bunuh Hostname Ubuntu dari Casper (Pake metode Append biar tembus)
+echo 'export HOSTNAME="nusa-os"' >> /etc/casper.conf
+echo 'export FLAVOUR="Nusa OS"' >> /etc/casper.conf
+echo 'export USERNAME="nusa"' >> /etc/casper.conf
+echo 'export USERFULLNAME="Nusa OS Live"' >> /etc/casper.conf
+
 echo "nusa-os" > /etc/hostname
-sed -i 's/ubuntu/nusa-os/g' /etc/hosts
+echo "127.0.0.1 localhost" > /etc/hosts
+echo "127.0.1.1 nusa-os" >> /etc/hosts
 
-# 3. Paksa Konfigurasi LightDM (Lockscreen)
-cat <<EOF > /etc/lightdm/lightdm-gtk-greeter.conf
-[greeter]
-background=/usr/share/backgrounds/nusa/default.jpg
-theme-name=Adwaita
-icon-theme-name=Adwaita
-font-name=Sans 11
-EOF
-
-# 4. Brutal Force Wallpaper XFCE & Debian
-# XFCE default config override
-mkdir -p /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/
-cat <<EOF > /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml
+# 3. HACK WALLPAPER XFCE VIA /etc/skel/ (Ini kunciannya!)
+mkdir -p /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/
+cat <<EOF > /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml
 <?xml version="1.0" encoding="UTF-8"?>
 <channel name="xfce4-desktop" version="1.0">
   <property name="backdrop" type="empty">
@@ -49,8 +42,17 @@ cat <<EOF > /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml
 </channel>
 EOF
 
+# 4. HACK LIGHTDM (Lockscreen) & Hapus Cache Debian
+cat <<EOF > /etc/lightdm/lightdm-gtk-greeter.conf
+[greeter]
+background=/usr/share/backgrounds/nusa/default.jpg
+theme-name=Adwaita
+icon-theme-name=Adwaita
+font-name=Sans 11
+EOF
 
-cp -f /usr/share/backgrounds/nusa/default.jpg /usr/share/images/desktop-base/default || true
+rm -f /usr/share/images/desktop-base/default
+ln -s /usr/share/backgrounds/nusa/default.jpg /usr/share/images/desktop-base/default
 
-echo "✅ Identitas Nusa OS V2 berhasil dipasang!"
+echo "✅ Identitas Nusa OS V3 berhasil dipasang di akar skel!"
 exit 0
