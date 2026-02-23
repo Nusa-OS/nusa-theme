@@ -1,5 +1,4 @@
 #!/bin/bash
-# Post-install script for nusa-theme
 
 echo "🎨 Memulai Operasi Plastik Nusa OS..."
 
@@ -15,29 +14,43 @@ ID_LIKE=ubuntu
 HOME_URL="https://github.com/Nusa-OS"
 EOF
 
-# 2. Ganti LSB Release
-cat <<EOF > /etc/lsb-release
-DISTRIB_ID=Nusa
-DISTRIB_RELEASE=1.0
-DISTRIB_CODENAME=alpha
-DISTRIB_DESCRIPTION="Nusa OS V1 Alpha"
+# 2. Membunuh Hostname 'Ubuntu' dari Live CD (Casper)
+if [ -f /etc/casper.conf ]; then
+    sed -i 's/export HOSTNAME=.*/export HOSTNAME="nusa-os"/' /etc/casper.conf
+    sed -i 's/export FLAVOUR=.*/export FLAVOUR="Nusa OS"/' /etc/casper.conf
+fi
+echo "nusa-os" > /etc/hostname
+sed -i 's/ubuntu/nusa-os/g' /etc/hosts
+
+# 3. Paksa Konfigurasi LightDM (Lockscreen)
+cat <<EOF > /etc/lightdm/lightdm-gtk-greeter.conf
+[greeter]
+background=/usr/share/backgrounds/nusa/default.jpg
+theme-name=Adwaita
+icon-theme-name=Adwaita
+font-name=Sans 11
 EOF
 
-# 3. Ganti Teks Terminal Login
-echo -e "Nusa OS V1 Alpha \n \l" > /etc/issue
-echo "Nusa OS V1 Alpha" > /etc/issue.net
+# 4. Brutal Force Wallpaper XFCE & Debian
+# XFCE default config override
+mkdir -p /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/
+cat <<EOF > /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfce4-desktop" version="1.0">
+  <property name="backdrop" type="empty">
+    <property name="screen0" type="empty">
+      <property name="monitor0" type="empty">
+        <property name="workspace0" type="empty">
+          <property name="last-image" type="string" value="/usr/share/backgrounds/nusa/default.jpg"/>
+        </property>
+      </property>
+    </property>
+  </property>
+</channel>
+EOF
 
-# 4. Ganti Wallpaper Lockscreen (LightDM)
-if [ -f /etc/lightdm/lightdm-gtk-greeter.conf ]; then
-    sed -i 's|^#background=.*|background=/usr/share/backgrounds/nusa/default.jpg|' /etc/lightdm/lightdm-gtk-greeter.conf
-    sed -i 's|^background=.*|background=/usr/share/backgrounds/nusa/default.jpg|' /etc/lightdm/lightdm-gtk-greeter.conf
-fi
 
-# 5. Brutal Force: Timpa Wallpaper Default XFCE & Debian
-ln -sf /usr/share/backgrounds/nusa/default.jpg /usr/share/backgrounds/xfce/xfce-shapes.svg
-ln -sf /usr/share/backgrounds/nusa/default.jpg /usr/share/backgrounds/xfce/xfce-stripes.png
-ln -sf /usr/share/backgrounds/nusa/default.jpg /usr/share/backgrounds/xfce/xfce-teal.jpg
-ln -sf /usr/share/backgrounds/nusa/default.jpg /usr/share/backgrounds/xfce/xfce-verticals.png
+cp -f /usr/share/backgrounds/nusa/default.jpg /usr/share/images/desktop-base/default || true
 
-echo "✅ Identitas Nusa OS berhasil dipasang!"
+echo "✅ Identitas Nusa OS V2 berhasil dipasang!"
 exit 0
