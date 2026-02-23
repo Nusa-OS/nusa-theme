@@ -1,7 +1,7 @@
 #!/bin/bash
-echo "🎨 Menerapkan Identitas Nusa OS V1 Beta..."
+# Nusa OS V1 Beta - Identity Provider
 
-# 1. Identitas OS
+# Branding OS
 cat <<EOF > /etc/os-release
 PRETTY_NAME="Nusa OS V1 Beta"
 NAME="Nusa OS"
@@ -11,10 +11,10 @@ ID=nusa
 ID_LIKE=ubuntu
 EOF
 
-# 2. XFCE Config (Theme & Wallpaper)
+# Global XFCE Settings
 mkdir -p /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/
 
-# Tema & Icon
+# Apply Arc-Darker and Papirus
 cat <<EOF > /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml
 <?xml version="1.0" encoding="UTF-8"?>
 <channel name="xsettings" version="1.0">
@@ -25,7 +25,7 @@ cat <<EOF > /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml
 </channel>
 EOF
 
-# Wallpaper
+# Desktop Wallpaper Configuration
 cat <<EOF > /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml
 <?xml version="1.0" encoding="UTF-8"?>
 <channel name="xfce4-desktop" version="1.0">
@@ -42,7 +42,7 @@ cat <<EOF > /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml
 </channel>
 EOF
 
-# 3. GNOME Wallpaper Fix (Jika masuk GNOME)
+# GNOME Schema Override
 mkdir -p /usr/share/glib-2.0/schemas/
 cat <<EOF > /usr/share/glib-2.0/schemas/99_nusa_wallpaper.gschema.override
 [org.gnome.desktop.background]
@@ -51,7 +51,7 @@ picture-options='zoom'
 EOF
 glib-compile-schemas /usr/share/glib-2.0/schemas/
 
-# 4. Sinkronisasi ke User
+# Permission Fix for Live User
 cp -r /etc/skel/.config /home/nusa/ || true
 chown -R nusa:nusa /home/nusa/ || true
 
