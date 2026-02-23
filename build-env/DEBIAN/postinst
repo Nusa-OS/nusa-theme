@@ -1,35 +1,60 @@
 #!/bin/bash
-# Nusa OS 1.2-Beta Identity Provider
+set -e
 
-# 1. OS Branding
+# --- System Branding Configuration ---
 cat <<EOF > /etc/os-release
-PRETTY_NAME="Nusa OS 1.2-Beta"
+PRETTY_NAME="Nusa OS 1.2.1-Beta"
 NAME="Nusa OS"
-VERSION_ID="1.2"
-VERSION="1.2 Beta"
+VERSION_ID="1.2.1"
+VERSION="1.2.1 Beta"
 ID=nusa
 ID_LIKE=ubuntu
 EOF
 
-# 2. Global CSS Override (Garuda Gold Accent)
+# --- Aggressive UI Color Overrides (Obsidian & Gold) ---
 mkdir -p /etc/skel/.config/gtk-3.0/
-cat <<EOF > /etc/skel/.config/gtk-3.0/gtk.css
-@define-color selected_bg_color #D4AF37;
-@define-color selected_fg_color #1A1A1A;
-@define-color accent_color #D4AF37;
+mkdir -p /etc/skel/.config/gtk-4.0/
 
-/* Obsidian Panel Style */
+cat <<EOF > /etc/skel/.config/gtk-3.0/gtk.css
+/* Core Color Definitions */
+@define-color selected_bg_color #C5A028;
+@define-color selected_fg_color #1A1A1A;
+@define-color accent_color #C5A028;
+@define-color theme_selected_bg_color #C5A028;
+
+/* XFCE Panel & Tasklist Hardening */
 .xfce4-panel {
-    background-color: rgba(26, 26, 26, 0.85);
-    border-bottom: 1px solid #D4AF37;
+    background-color: #1A1A1A !important;
+    border-bottom: 2px solid #C5A028 !important;
 }
+
+.tasklist-button:checked, 
+.tasklist-button:hover {
+    background-color: #2D2D2D !important;
+    border-bottom: 3px solid #C5A028 !important;
+    color: #C5A028 !important;
+}
+
+/* Global Elements */
+selection { background-color: #C5A028; color: #1A1A1A; }
 EOF
 
-# 3. Desktop Policy (No Icons)
-xfconf-query -c xfce4-desktop -p /desktop-icons/style -n -t int -s 0 --create || true
+cp /etc/skel/.config/gtk-3.0/gtk.css /etc/skel/.config/gtk-4.0/gtk.css
 
-# 4. Font & Cursor Config
+# --- XFCE Subsystem Configuration ---
 mkdir -p /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/
+
+# Enforcement: Clean Desktop Policy
+cat <<EOF > /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="xfce4-desktop" version="1.0">
+  <property name="desktop-icons" type="empty">
+    <property name="style" type="int" value="0"/>
+  </property>
+</channel>
+EOF
+
+# Enforcement: Visual Fidelity (Font, Theme, Cursor)
 cat <<EOF > /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml
 <?xml version="1.0" encoding="UTF-8"?>
 <channel name="xsettings" version="1.0">
@@ -39,12 +64,16 @@ cat <<EOF > /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml
   </property>
   <property name="Gtk" type="empty">
     <property name="FontName" type="string" value="Inter 10"/>
+    <property name="CursorThemeName" type="string" value="Bibata-Modern-Classic"/>
   </property>
 </channel>
 EOF
 
-# 5. Apply to Live User
-cp -r /etc/skel/.config /home/nusa/ || true
-chown -R nusa:nusa /home/nusa/ || true
+# --- Environment Synchronization ---
+# Ensure the live user inherits the profile immediately
+if id "nusa" &>/dev/null; then
+    cp -r /etc/skel/.config /home/nusa/
+    chown -R nusa:nusa /home/nusa/.config
+fi
 
 exit 0
