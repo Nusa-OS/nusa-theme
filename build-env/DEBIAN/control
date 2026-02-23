@@ -1,10 +1,8 @@
 Package: nusa-theme
-Version: 1.2-alpha
-Section: custom
+Version: 1.0-beta
+Section: misc
 Priority: optional
 Architecture: all
-Depends: bash, lightdm-gtk-greeter
-Maintainer: Z-Core DNA <admin@nusa-os.com>
-Description: Official UI Theme and Branding for Nusa OS
- This package contains the base branding, wallpapers, and OS identity scripts
- for Nusa OS to replace the default Ubuntu/Debian aesthetics.
+Maintainer: Nusa-OS Team
+Depends: lightdm-gtk-greeter, arc-theme, papirus-icon-theme
+Description: Official Nusa OS V1 Beta Theme and Identity.
