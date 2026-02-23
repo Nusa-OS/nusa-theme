@@ -55,4 +55,14 @@ rm -f /usr/share/images/desktop-base/default
 ln -s /usr/share/backgrounds/nusa/default.jpg /usr/share/images/desktop-base/default
 
 echo "✅ Identitas Nusa OS V3 berhasil dipasang di akar skel!"
+# NUKLIR: Hapus paksa paket branding Debian biar nggak ganggu wallpaper
+apt-get purge -y desktop-base
+
+# Paksa hapus file wallpaper debian yang tersisa
+rm -rf /usr/share/images/desktop-base/*
+cp -f /usr/share/backgrounds/nusa/default.jpg /usr/share/backgrounds/debian-theme.jpg
+
+# Set hostname secara brutal di semua lini
+echo "nusa-os" > /etc/hostname
+sed -i 's/ubuntu/nusa-os/g' /etc/hosts
 exit 0
