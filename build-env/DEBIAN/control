@@ -1,8 +1,8 @@
 Package: nusa-theme
-Version: 1.0-beta
+Version: 1.2-beta
 Section: misc
 Priority: optional
 Architecture: all
 Maintainer: Nusa-OS Team
-Depends: lightdm-gtk-greeter, arc-theme, papirus-icon-theme
-Description: Official Nusa OS V1 Beta Theme and Identity.
+Depends: arc-theme, papirus-icon-theme, fonts-inter, bibata-cursor-theme, xfce4-whiskermenu-plugin
+Description: Nusa OS Garuda Obsidian Edition - V1.2 Beta.
