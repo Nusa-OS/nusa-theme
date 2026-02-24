@@ -1,9 +1,9 @@
 Package: nusa-theme
-Version: 1.2.1-beta
+Version: 1.2.2
 Section: misc
 Priority: optional
 Architecture: all
 Maintainer: Nusa-OS Developer <dev@nusa-os.org>
-Depends: lightdm-gtk-greeter, arc-theme, papirus-icon-theme, xfce4-whiskermenu-plugin, fonts-inter, bibata-cursor-theme
-Description: Official identity assets for Nusa OS 1.2.1-Beta.
- Includes Obsidian-Gold GTK overrides and system branding.
+Depends: gdm3, gnome-shell, arc-theme, papirus-icon-theme, fonts-inter, bibata-cursor-theme
+Description: Official GNOME identity for Nusa OS 1.2.2.
+ Features Obsidian-Gold GSchema overrides.

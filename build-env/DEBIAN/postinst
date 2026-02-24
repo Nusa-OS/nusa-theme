@@ -1,79 +1,47 @@
 #!/bin/bash
 set -e
 
-# --- System Branding Configuration ---
+# --- System Branding ---
 cat <<EOF > /etc/os-release
-PRETTY_NAME="Nusa OS 1.2.1-Beta"
+PRETTY_NAME="Nusa OS 1.2.2"
 NAME="Nusa OS"
-VERSION_ID="1.2.1"
-VERSION="1.2.1 Beta"
+VERSION_ID="1.2.2"
+VERSION="1.2.2 Beta"
 ID=nusa
 ID_LIKE=ubuntu
 EOF
 
-# --- Aggressive UI Color Overrides (Obsidian & Gold) ---
+# --- GNOME GSchema Overrides (Hardcode Identity) ---
+mkdir -p /usr/share/glib-2.0/schemas/
+cat <<EOF > /usr/share/glib-2.0/schemas/99_nusa_identity.gschema.override
+[org.gnome.desktop.interface]
+gtk-theme='Arc-Darker'
+icon-theme='Papirus'
+cursor-theme='Bibata-Modern-Classic'
+font-name='Inter 10'
+document-font-name='Inter 10'
+monospace-font-name='Fira Code 10'
+
+[org.gnome.desktop.background]
+picture-uri='file:///usr/share/backgrounds/nusa/default.jpg'
+picture-options='zoom'
+
+[org.gnome.shell.extensions.dash-to-dock]
+background-opacity=0.8
+custom-theme-shrink=true
+EOF
+
+# Compile schemas agar terbaca sistem
+glib-compile-schemas /usr/share/glib-2.0/schemas/
+
+# --- GTK 3/4 Force Gold Color ---
 mkdir -p /etc/skel/.config/gtk-3.0/
-mkdir -p /etc/skel/.config/gtk-4.0/
-
 cat <<EOF > /etc/skel/.config/gtk-3.0/gtk.css
-/* Core Color Definitions */
-@define-color selected_bg_color #C5A028;
+@define-color selected_bg_color #D4AF37;
 @define-color selected_fg_color #1A1A1A;
-@define-color accent_color #C5A028;
-@define-color theme_selected_bg_color #C5A028;
-
-/* XFCE Panel & Tasklist Hardening */
-.xfce4-panel {
-    background-color: #1A1A1A !important;
-    border-bottom: 2px solid #C5A028 !important;
-}
-
-.tasklist-button:checked, 
-.tasklist-button:hover {
-    background-color: #2D2D2D !important;
-    border-bottom: 3px solid #C5A028 !important;
-    color: #C5A028 !important;
-}
-
-/* Global Elements */
-selection { background-color: #C5A028; color: #1A1A1A; }
+@define-color accent_color #D4AF37;
 EOF
-
+mkdir -p /etc/skel/.config/gtk-4.0/
 cp /etc/skel/.config/gtk-3.0/gtk.css /etc/skel/.config/gtk-4.0/gtk.css
-
-# --- XFCE Subsystem Configuration ---
-mkdir -p /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/
-
-# Enforcement: Clean Desktop Policy
-cat <<EOF > /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml
-<?xml version="1.0" encoding="UTF-8"?>
-<channel name="xfce4-desktop" version="1.0">
-  <property name="desktop-icons" type="empty">
-    <property name="style" type="int" value="0"/>
-  </property>
-</channel>
-EOF
-
-# Enforcement: Visual Fidelity (Font, Theme, Cursor)
-cat <<EOF > /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml
-<?xml version="1.0" encoding="UTF-8"?>
-<channel name="xsettings" version="1.0">
-  <property name="Net" type="empty">
-    <property name="ThemeName" type="string" value="Arc-Darker"/>
-    <property name="IconThemeName" type="string" value="Papirus"/>
-  </property>
-  <property name="Gtk" type="empty">
-    <property name="FontName" type="string" value="Inter 10"/>
-    <property name="CursorThemeName" type="string" value="Bibata-Modern-Classic"/>
-  </property>
-</channel>
-EOF
-
-# --- Environment Synchronization ---
-# Ensure the live user inherits the profile immediately
-if id "nusa" &>/dev/null; then
-    cp -r /etc/skel/.config /home/nusa/
-    chown -R nusa:nusa /home/nusa/.config
-fi
 
 exit 0
